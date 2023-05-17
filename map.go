@@ -12,11 +12,6 @@ type RegularError struct {
 	ReplacementPattern string `json:"replacement,omitempty" yaml:"replacement"`
 }
 
-type RegularErrorMatcher struct {
-	Context  string         `json:"context,omitempty" yaml:"context"`
-	Matchers []RegularError `json:"matchers,omitempty" yaml:"matchers"`
-}
-
 type SuggestionBox struct {
 	matchers map[string][]RegularError
 }
