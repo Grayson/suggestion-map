@@ -20,6 +20,14 @@ func TestFindSuggestions(t *testing.T) {
 			},
 			"Make sure that foo is defined above line 19 in example.swift",
 		},
+		{
+			"Basic go-style error message",
+			args{
+				"go",
+				"./map.go:17:2: undefined: x",
+			},
+			"Make sure that x is defined above line 17 in map.go",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
