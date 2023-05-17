@@ -1,0 +1,10 @@
+clang:
+- match: ^(.*):(\d+):(\d+) Cannot find '(.+?)' in scope$
+  replacement: Make sure that $4 is defined above line $2 in $1
+go:
+- match: "^(.*):(\\d+):(\\d+): undefined: (.+)$"
+  replacement: "Make sure that $4 is defined above line $2 in $1"
+- match: "^(.*):(\\d+):(\\d+): no new variables on left side of :=$"
+  replacement: Looks like you're reusing a variable that's already been declared on line $2 of file $1
+- match: "^(.*):(\\d+):(\\d+): cannot use 1 (.+?) as (.+?) value in assignment$"
+  replacement: Looks like a variable was defined earlier as $4 but you're setting it to $5 on line $2 of file $1.xadsfasdf

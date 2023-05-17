@@ -1,51 +1,56 @@
 package suggestionmap
 
 import (
+	"os"
 	"regexp"
+
+	"gopkg.in/yaml.v3"
 )
 
-type regularError struct {
-	matchRegex         string
-	replacementPattern string
+type RegularError struct {
+	MatchRegex         string `json:"match,omitempty" yaml:"match"`
+	ReplacementPattern string `json:"replacement,omitempty" yaml:"replacement"`
 }
 
-var matchers = map[string][]regularError{
-	"clang": {
-		{
-			`^(.*):(\d+):(\d+) Cannot find '(.+?)' in scope$`,
-			"Make sure that $4 is defined above line $2 in $1",
-		},
-	},
-	"go": {
-		{
-			`^(.*):(\d+):(\d+): undefined: (.+)$`,
-			"Make sure that $4 is defined above line $2 in $1",
-		},
-		{
-			`^(.*):(\d+):(\d+): no new variables on left side of :=$`,
-			"Looks like you're reusing a variable that's already been declared on line $2 of file $1",
-		},
-		{
-			`^(.*):(\d+):(\d+): cannot use 1 (.+?) as (.+?) value in assignment$`,
-			"Looks like a variable was defined earlier as $4 but you're setting it to $5 on line $2 of file $1.",
-		},
-	},
+type RegularErrorMatcher struct {
+	Context  string         `json:"context,omitempty" yaml:"context"`
+	Matchers []RegularError `json:"matchers,omitempty" yaml:"matchers"`
 }
 
-func FindSuggestions(context string, input string) []string {
-	tests := matchers[context]
+type SuggestionBox struct {
+	matchers map[string][]RegularError
+}
+
+func LoadFile(path string) *SuggestionBox {
+	bytes, err := os.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+
+	var matchers map[string][]RegularError
+	err = yaml.Unmarshal(bytes, &matchers)
+	if err != nil {
+		panic(err)
+	}
+	return &SuggestionBox{
+		matchers: matchers,
+	}
+}
+
+func (sb *SuggestionBox) FindSuggestions(context string, input string) []string {
+	tests := sb.matchers[context]
 	if len(tests) == 0 {
 		return nil
 	}
 
 	suggestions := make([]string, 0)
 	for _, test := range tests {
-		re := regexp.MustCompile(test.matchRegex)
+		re := regexp.MustCompile(test.MatchRegex)
 		if !re.MatchString(input) {
 			continue
 		}
 
-		suggestion := re.ReplaceAllString(input, test.replacementPattern)
+		suggestion := re.ReplaceAllString(input, test.ReplacementPattern)
 		if suggestion == "" {
 			continue
 		}

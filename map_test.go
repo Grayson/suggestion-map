@@ -61,9 +61,12 @@ func TestFindSuggestions(t *testing.T) {
 			},
 		},
 	}
+
+	sb := LoadFile("default.yaml")
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := FindSuggestions(tt.args.context, tt.args.input)
+			got := sb.FindSuggestions(tt.args.context, tt.args.input)
 			for idx := 0; idx < len(got); idx++ {
 				if got[idx] == tt.want[idx] {
 					continue
