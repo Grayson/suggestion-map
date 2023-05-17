@@ -28,6 +28,14 @@ func TestFindSuggestions(t *testing.T) {
 			},
 			"Make sure that x is defined above line 17 in map.go",
 		},
+		{
+			"Empty context",
+			args{
+				"",
+				"./map.go:17:2: undefined: x",
+			},
+			"",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
