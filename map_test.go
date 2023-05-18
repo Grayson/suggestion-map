@@ -62,7 +62,7 @@ func TestFindSuggestions(t *testing.T) {
 		},
 	}
 
-	sb := LoadFile("default.yaml")
+	sb := Init()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

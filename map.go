@@ -5,6 +5,8 @@ import (
 	"regexp"
 
 	"gopkg.in/yaml.v3"
+
+	_ "embed"
 )
 
 type RegularError struct {
@@ -16,14 +18,25 @@ type SuggestionBox struct {
 	matchers map[string][]RegularError
 }
 
+//go:embed default.yaml
+var defaultYamlFile []byte
+
 func LoadFile(path string) *SuggestionBox {
 	bytes, err := os.ReadFile(path)
 	if err != nil {
 		panic(err)
 	}
 
+	return load(bytes)
+}
+
+func Init() *SuggestionBox {
+	return load(defaultYamlFile)
+}
+
+func load(bytes []byte) *SuggestionBox {
 	var matchers map[string][]RegularError
-	err = yaml.Unmarshal(bytes, &matchers)
+	err := yaml.Unmarshal(bytes, &matchers)
 	if err != nil {
 		panic(err)
 	}
